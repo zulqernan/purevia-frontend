@@ -32,7 +32,7 @@ export default function Signup({ onSignup, onGoLogin }) {
     setError("");
 
     try {
-      const response = await fetch("https://purevia-backend-production.up.railway.app/api/auth/signup", {
+      const response = await fetch("https://purevia-backend.vercel.app/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

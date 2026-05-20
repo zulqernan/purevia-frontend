@@ -21,7 +21,7 @@ export default function Dashboard({ user, token, onLogout }) {
 
   const fetchOrders = async () => {
     try {
-      const res = await fetch("https://purevia-backend-production.up.railway.app/api/orders/my-orders", {
+      const res = await fetch("https://purevia-backend.vercel.app/api/orders/my-orders", {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
@@ -39,7 +39,7 @@ export default function Dashboard({ user, token, onLogout }) {
     setLoading(true);
     setOrderMsg("");
     try {
-      const res = await fetch("https://purevia-backend-production.up.railway.app/api/orders/place", {
+      const res = await fetch("https://purevia-backend.vercel.app/api/orders/place", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

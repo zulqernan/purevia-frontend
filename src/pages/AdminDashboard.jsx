@@ -14,7 +14,7 @@ export default function AdminDashboard({ token, onLogout }) {
 
   const fetchOrders = async () => {
     try {
-      const res = await fetch("https://purevia-backend-production.up.railway.app/api/orders/all", {
+      const res = await fetch("https://purevia-backend.vercel.app/api/orders/all", {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
@@ -32,7 +32,7 @@ export default function AdminDashboard({ token, onLogout }) {
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch("https://purevia-backend-production.up.railway.app/api/auth/users", {
+      const res = await fetch("https://purevia-backend.vercel.app/api/auth/users", {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
@@ -47,7 +47,7 @@ export default function AdminDashboard({ token, onLogout }) {
 
   const updateOrderStatus = async (orderId, status) => {
     try {
-      const res = await fetch(`https://purevia-backend-production.up.railway.app/api/orders/status/${orderId}`, {
+      const res = await fetch(`https://purevia-backend.vercel.app/api/orders/status/${orderId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

@@ -46,7 +46,7 @@ export default function Payment({ order, token, onSuccess, onCancel }) {
     setStep("processing");
 
     try {
-      const res = await fetch("https://purevia-backend-production.up.railway.app/api/payments/process", {
+      const res = await fetch("https://purevia-backend.vercel.app/api/payments/process", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
