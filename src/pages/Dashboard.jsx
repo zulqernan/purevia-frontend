@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Payment from "./Payment";
 
 export default function Dashboard({ user, token, onLogout }) {
   const [orders, setOrders] = useState([]);
@@ -8,9 +9,10 @@ export default function Dashboard({ user, token, onLogout }) {
   });
   const [orderMsg, setOrderMsg] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
 
   const areas = ["DHA", "Clifton", "Gulshan", "PECHS", "Saddar", "North Nazimabad", "Nazimabad", "Federal B Area"];
-
   const prices = { "330ml": 25, "500ml": 40, "1.5L": 80, "19L": 250 };
 
   useEffect(() => {
@@ -47,7 +49,7 @@ export default function Dashboard({ user, token, onLogout }) {
       });
       const data = await res.json();
       if (res.ok) {
-        setOrderMsg("✅ Order placed successfully!");
+        setOrderMsg("✅ Order placed! Go to My Orders to pay.");
         setOrderForm({ product: "500ml", quantity: 1, deliveryAddress: "", deliveryArea: "DHA" });
       } else {
         setOrderMsg(data.message || "Order failed");
@@ -102,6 +104,24 @@ export default function Dashboard({ user, token, onLogout }) {
         .tab-btn.active { background: #0284c7; color: white; }
         .tab-btn:hover:not(.active) { background: #f0f9ff; color: #0284c7; }
       `}</style>
+
+      {/* Payment Modal */}
+      {showPayment && selectedOrder && (
+        <Payment
+          order={selectedOrder}
+          token={token}
+          onSuccess={() => {
+            setShowPayment(false);
+            setSelectedOrder(null);
+            fetchOrders();
+            setActiveTab("orders");
+          }}
+          onCancel={() => {
+            setShowPayment(false);
+            setSelectedOrder(null);
+          }}
+        />
+      )}
 
       {/* Navbar */}
       <nav style={{
@@ -165,7 +185,6 @@ export default function Dashboard({ user, token, onLogout }) {
               <p style={{ color: "#64748b", fontSize: 16 }}>What would you like to order today?</p>
             </div>
 
-            {/* Products */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 20, marginBottom: 32 }}>
               {[
                 { name: "330ml", label: "Pocket Pure", icon: "💧", price: 25 },
@@ -261,7 +280,6 @@ export default function Dashboard({ user, token, onLogout }) {
                   onChange={e => setOrderForm({ ...orderForm, deliveryAddress: e.target.value })} />
               </div>
 
-              {/* Total */}
               <div style={{ background: "#f0f9ff", borderRadius: 12, padding: "16px 20px", border: "1px solid #bae6fd" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <span style={{ color: "#64748b", fontSize: 15 }}>Total Amount</span>
@@ -285,7 +303,6 @@ export default function Dashboard({ user, token, onLogout }) {
                   fontWeight: 600,
                   cursor: loading ? "not-allowed" : "pointer",
                   opacity: loading ? 0.7 : 1,
-                  transition: "all 0.3s",
                 }}
               >
                 {loading ? "Placing Order..." : "Place Order 🚀"}
@@ -352,6 +369,37 @@ export default function Dashboard({ user, token, onLogout }) {
                           color: statusColor(order.status),
                           textTransform: "capitalize",
                         }}>{order.status.replace("_", " ")}</div>
+
+                        {/* Payment Status */}
+                        <div style={{ marginTop: 8 }}>
+                          {order.paymentStatus === "paid" ? (
+                            <span style={{
+                              display: "inline-block",
+                              padding: "4px 14px",
+                              background: "rgba(16,185,129,0.1)",
+                              border: "1px solid rgba(16,185,129,0.3)",
+                              borderRadius: 50,
+                              fontSize: 12,
+                              fontWeight: 600,
+                              color: "#10b981",
+                            }}>✅ Paid</span>
+                          ) : (
+                            <button
+                              onClick={() => { setSelectedOrder(order); setShowPayment(true); }}
+                              style={{
+                                padding: "6px 16px",
+                                background: "linear-gradient(135deg, #10b981, #059669)",
+                                color: "white",
+                                border: "none",
+                                borderRadius: 8,
+                                cursor: "pointer",
+                                fontFamily: "'DM Sans', sans-serif",
+                                fontWeight: 600,
+                                fontSize: 13,
+                              }}
+                            >💳 Pay Now</button>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
