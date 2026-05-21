@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Payment from "./Payment";
+import Subscription from "./Subscription";
 
 export default function Dashboard({ user, token, onLogout }) {
   const [orders, setOrders] = useState([]);
@@ -11,6 +12,7 @@ export default function Dashboard({ user, token, onLogout }) {
   const [loading, setLoading] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [showSubscription, setShowSubscription] = useState(false);
 
   const areas = ["DHA", "Clifton", "Gulshan", "PECHS", "Saddar", "North Nazimabad", "Nazimabad", "Federal B Area"];
   const prices = { "330ml": 25, "500ml": 40, "1.5L": 80, "19L": 250 };
@@ -106,6 +108,12 @@ export default function Dashboard({ user, token, onLogout }) {
       `}</style>
 
       {/* Payment Modal */}
+      {showSubscription && (
+  <Subscription
+    token={token}
+    onBack={() => setShowSubscription(false)}
+  />
+)}
       {showPayment && selectedOrder && (
         <Payment
           order={selectedOrder}
@@ -169,6 +177,7 @@ export default function Dashboard({ user, token, onLogout }) {
             { id: "order", label: "📦 Place Order" },
             { id: "orders", label: "📋 My Orders" },
             { id: "profile", label: "👤 Profile" },
+            { id: "subscription", label: "📋 Subscription" },
           ].map(tab => (
             <button key={tab.id} className={`tab-btn ${activeTab === tab.id ? "active" : ""}`}
               onClick={() => setActiveTab(tab.id)}>{tab.label}</button>
@@ -450,6 +459,9 @@ export default function Dashboard({ user, token, onLogout }) {
               </div>
             ))}
           </div>
+        )}
+        {activeTab === "subscription" && (
+          <Subscription token={token} onBack={() => setActiveTab("home")} />
         )}
       </div>
     </div>

@@ -6,10 +6,12 @@ export default function AdminDashboard({ token, onLogout }) {
   const [users, setUsers] = useState([]);
   const [stats, setStats] = useState({ totalOrders: 0, totalRevenue: 0, totalUsers: 0, pendingOrders: 0 });
   const [loading, setLoading] = useState(true);
+  const [subscriptions, setSubscriptions] = useState([]);
 
   useEffect(() => {
     fetchOrders();
     fetchUsers();
+    fetchSubscriptions();
   }, []);
 
   const fetchOrders = async () => {
@@ -29,7 +31,17 @@ export default function AdminDashboard({ token, onLogout }) {
     }
     setLoading(false);
   };
-
+const fetchSubscriptions = async () => {
+  try {
+    const res = await fetch("https://purevia-backend.vercel.app/api/subscriptions/all", {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (res.ok) setSubscriptions(data.subscriptions);
+  } catch (err) {
+    console.log(err);
+  }
+};
   const fetchUsers = async () => {
     try {
       const res = await fetch("https://purevia-backend.vercel.app/api/auth/users", {
@@ -163,6 +175,7 @@ export default function AdminDashboard({ token, onLogout }) {
             { id: "overview", label: "📊 Overview" },
             { id: "orders", label: "📦 Orders" },
             { id: "users", label: "👥 Users" },
+            { id: "subscriptions", label: "📋 Subscriptions" },
           ].map(tab => (
             <button key={tab.id} className={`tab-btn ${activeTab === tab.id ? "active" : ""}`}
               onClick={() => setActiveTab(tab.id)}>{tab.label}</button>
@@ -354,6 +367,53 @@ export default function AdminDashboard({ token, onLogout }) {
                       color: "#10b981",
                       fontWeight: 600,
                     }}>Customer</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        {activeTab === "subscriptions" && (
+          <div>
+            <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, color: "white", marginBottom: 24 }}>
+              All Subscriptions ({subscriptions.filter(s => s.status === "active").length} Active)
+            </h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {subscriptions.length === 0 ? (
+                <div style={{ textAlign: "center", padding: 60, color: "#475569" }}>No subscriptions yet</div>
+              ) : subscriptions.map(sub => (
+                <div key={sub._id} style={{
+                  background: "rgba(255,255,255,0.02)",
+                  border: "1px solid rgba(255,255,255,0.06)",
+                  borderRadius: 14,
+                  padding: "20px 24px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  flexWrap: "wrap",
+                  gap: 16,
+                }}>
+                  <div>
+                    <div style={{ color: "white", fontWeight: 700, fontSize: 16 }}>{sub.planName} Plan</div>
+                    <div style={{ color: "#475569", fontSize: 13, marginTop: 4 }}>📍 {sub.deliveryArea} — {sub.deliveryAddress}</div>
+                    <div style={{ color: "#334155", fontSize: 12, marginTop: 4 }}>{sub.cans} cans/month</div>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, fontWeight: 800, color: "#10b981" }}>
+                      Rs. {sub.price?.toLocaleString()}/month
+                    </div>
+                    <span style={{
+                      display: "inline-block",
+                      marginTop: 6,
+                      padding: "3px 10px",
+                      background: sub.status === "active" ? "rgba(16,185,129,0.1)" : "rgba(239,68,68,0.1)",
+                      border: `1px solid ${sub.status === "active" ? "rgba(16,185,129,0.3)" : "rgba(239,68,68,0.3)"}`,
+                      borderRadius: 50,
+                      fontSize: 11,
+                      color: sub.status === "active" ? "#10b981" : "#ef4444",
+                      fontWeight: 600,
+                      textTransform: "capitalize",
+                    }}>{sub.status}</span>
                   </div>
                 </div>
               ))}
