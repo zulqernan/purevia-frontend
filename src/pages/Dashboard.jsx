@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Payment from "./Payment";
 import Subscription from "./Subscription";
+import Cart from "./Cart";
 
 export default function Dashboard({ user, token, onLogout }) {
   const [orders, setOrders] = useState([]);
@@ -13,6 +14,7 @@ export default function Dashboard({ user, token, onLogout }) {
   const [showPayment, setShowPayment] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showSubscription, setShowSubscription] = useState(false);
+  const [showCart, setShowCart] = useState(false);
 
   const areas = ["DHA", "Clifton", "Gulshan", "PECHS", "Saddar", "North Nazimabad", "Nazimabad", "Federal B Area"];
   const prices = { "330ml": 25, "500ml": 40, "1.5L": 80, "19L": 250 };
@@ -180,6 +182,7 @@ flexWrap: "nowrap",
             { id: "orders", label: "📋 My Orders" },
             { id: "profile", label: "👤 Profile" },
             { id: "subscription", label: "📋 Subscription" },
+            { id: "cart", label: "🛒 Shop" },
           ].map(tab => (
             <button key={tab.id} className={`tab-btn ${activeTab === tab.id ? "active" : ""}`}
               onClick={() => setActiveTab(tab.id)}>{tab.label}</button>
@@ -465,6 +468,9 @@ flexWrap: "nowrap",
         {activeTab === "subscription" && (
           <Subscription token={token} onBack={() => setActiveTab("home")} />
         )}
+        {activeTab === "cart" && (
+  <Cart token={token} onBack={() => setActiveTab("home")} />
+)}
       </div>
     </div>
   );
