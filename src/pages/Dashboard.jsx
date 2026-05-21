@@ -171,6 +171,8 @@ export default function Dashboard({ user, token, onLogout }) {
           marginBottom: 32,
           boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
           border: "1px solid #e0f2fe",
+          overflowX: "auto",
+flexWrap: "nowrap",
         }}>
           {[
             { id: "home", label: "🏠 Home" },
