@@ -1,16 +1,56 @@
-# React + Vite
+# 💧 PUREVIA Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React.js frontend for PUREVIA — Pakistan's premium water delivery SaaS application.
 
-Currently, two official plugins are available:
+🔗 **Live Demo:** https://purevia-frontend.vercel.app/
+🔗 **Backend API:** https://purevia-backend.vercel.app/
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## 🚀 Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- ✅ JWT Authentication (Login/Signup)
+- ✅ Customer Dashboard
+- ✅ Shopping Cart
+- ✅ Payment (Card/JazzCash/Easypaisa)
+- ✅ Order History & Tracking
+- ✅ Subscription Plans
+- ✅ Admin Dashboard with Analytics
+- ✅ Mobile Responsive
+- ✅ Email Notifications
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🛠️ Tech Stack
+
+- **React.js** + Vite
+- **Recharts** — Analytics charts
+- **CSS-in-JS** — Custom styling
+- **Deployed on Vercel**
+
+---
+
+## 📁 Pages
+
+| Page | Description |
+|------|-------------|
+| Login | JWT login |
+| Signup | User registration |
+| Dashboard | Customer home |
+| Cart | Shopping cart |
+| Payment | Card/JazzCash/Easypaisa |
+| Subscription | Plan management |
+| AdminDashboard | Admin panel |
+
+---
+
+## 👨‍💻 Developer
+
+**Zulqernain Maher**
+- 📧 ah1845773@gmail.com
+- 💼 [LinkedIn](https://www.linkedin.com/in/zulqernain-maher-19a9732b5/)
+- 🐙 [GitHub](https://github.com/zulqernan)
+
+---
+
+*Built with passion from Mirpurkhas, Pakistan 🇵🇰*
