@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from "recharts";
 
 export default function AdminDashboard({ token, onLogout }) {
   const [activeTab, setActiveTab] = useState("overview");
@@ -7,6 +8,7 @@ export default function AdminDashboard({ token, onLogout }) {
   const [stats, setStats] = useState({ totalOrders: 0, totalRevenue: 0, totalUsers: 0, pendingOrders: 0 });
   const [loading, setLoading] = useState(true);
   const [subscriptions, setSubscriptions] = useState([]);
+  
 
   useEffect(() => {
     fetchOrders();
@@ -41,6 +43,37 @@ const fetchSubscriptions = async () => {
   } catch (err) {
     console.log(err);
   }
+};
+const getAnalytics = () => {
+  // Orders by product
+  const productCount = {};
+  orders.forEach(o => {
+    productCount[o.product] = (productCount[o.product] || 0) + o.quantity;
+  });
+  const productData = Object.entries(productCount).map(([name, value]) => ({ name, value }));
+
+  // Orders by status
+  const statusCount = {};
+  orders.forEach(o => {
+    statusCount[o.status] = (statusCount[o.status] || 0) + 1;
+  });
+  const statusData = Object.entries(statusCount).map(([name, value]) => ({ name: name.replace("_", " "), value }));
+
+  // Revenue by day (last 7 days)
+  const revenueByDay = {};
+  const last7 = [...Array(7)].map((_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() - (6 - i));
+    return d.toLocaleDateString('en-PK', { month: 'short', day: 'numeric' });
+  });
+  last7.forEach(day => revenueByDay[day] = 0);
+  orders.forEach(o => {
+    const day = new Date(o.createdAt).toLocaleDateString('en-PK', { month: 'short', day: 'numeric' });
+    if (revenueByDay[day] !== undefined) revenueByDay[day] += o.totalAmount;
+  });
+  const revenueData = Object.entries(revenueByDay).map(([date, revenue]) => ({ date, revenue }));
+
+  return { productData, statusData, revenueData };
 };
   const fetchUsers = async () => {
     try {
@@ -206,7 +239,80 @@ const fetchSubscriptions = async () => {
                 </div>
               ))}
             </div>
+{/* Analytics Charts */}
+{(() => {
+  const { productData, statusData, revenueData } = getAnalytics();
+  return (
+    <div style={{ marginBottom: 32 }}>
+      {/* Revenue Chart */}
+      <div style={{
+        background: "rgba(255,255,255,0.02)",
+        border: "1px solid rgba(255,255,255,0.06)",
+        borderRadius: 16,
+        padding: "24px",
+        marginBottom: 20,
+      }}>
+        <h3 style={{ fontFamily: "'Playfair Display', serif", color: "white", fontSize: 18, marginBottom: 20 }}>
+          📈 Revenue Last 7 Days
+        </h3>
+        <ResponsiveContainer width="100%" height={200}>
+          <LineChart data={revenueData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+            <XAxis dataKey="date" stroke="#475569" fontSize={12} />
+            <YAxis stroke="#475569" fontSize={12} />
+            <Tooltip contentStyle={{ background: "#1e293b", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "white" }} />
+            <Line type="monotone" dataKey="revenue" stroke="#0284c7" strokeWidth={2} dot={{ fill: "#0284c7" }} />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
 
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+        {/* Products Chart */}
+        <div style={{
+          background: "rgba(255,255,255,0.02)",
+          border: "1px solid rgba(255,255,255,0.06)",
+          borderRadius: 16,
+          padding: "24px",
+        }}>
+          <h3 style={{ fontFamily: "'Playfair Display', serif", color: "white", fontSize: 18, marginBottom: 20 }}>
+            🏆 Orders by Product
+          </h3>
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={productData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+              <XAxis dataKey="name" stroke="#475569" fontSize={12} />
+              <YAxis stroke="#475569" fontSize={12} />
+              <Tooltip contentStyle={{ background: "#1e293b", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "white" }} />
+              <Bar dataKey="value" fill="#0284c7" radius={[4,4,0,0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Status Chart */}
+        <div style={{
+          background: "rgba(255,255,255,0.02)",
+          border: "1px solid rgba(255,255,255,0.06)",
+          borderRadius: 16,
+          padding: "24px",
+        }}>
+          <h3 style={{ fontFamily: "'Playfair Display', serif", color: "white", fontSize: 18, marginBottom: 20 }}>
+            📦 Orders by Status
+          </h3>
+          <ResponsiveContainer width="100%" height={200}>
+            <PieChart>
+              <Pie data={statusData} cx="50%" cy="50%" outerRadius={80} dataKey="value" label={({name, value}) => `${name}: ${value}`}>
+                {statusData.map((entry, index) => (
+                  <Cell key={index} fill={["#0284c7","#10b981","#f59e0b","#8b5cf6","#ef4444"][index % 5]} />
+                ))}
+              </Pie>
+              <Tooltip contentStyle={{ background: "#1e293b", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "white" }} />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+    </div>
+  );
+})()}
             {/* Recent Orders */}
             <div style={{
               background: "rgba(255,255,255,0.02)",
@@ -214,6 +320,7 @@ const fetchSubscriptions = async () => {
               borderRadius: 16,
               overflow: "hidden",
             }}>
+              
               <div style={{ padding: "20px 24px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
                 <h3 style={{ fontFamily: "'Playfair Display', serif", color: "white", fontSize: 18 }}>Recent Orders</h3>
               </div>
